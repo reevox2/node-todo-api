@@ -1,3 +1,5 @@
+const {ObjectID} = require('mongodb');
+
 const {mongoose} = require('./db/mongoose.js');
 let {Todo} = require('./models/todo');
 let {User} = require('./models/User');
@@ -28,6 +30,22 @@ app.get('/todos', (req, res)=>{
 		res.status(200).send({todos});
 	})
 	.catch(e => done(e));
+})
+
+//GET /todos/id 
+app.get('/todos/:id', (req, res)=> {
+	let id = req.params.id;
+
+	if(!ObjectID.isValid(id)) {
+		res.status(404).send({error: `ID not valid`});
+	}
+	Todo.findById(id)
+		.then(todo =>{
+			if(!todo){
+				res.status(404).send({error: `Todo not found.`});
+			}
+			res.send({todo});
+		}).catch(e => res.status(400).send({e}))
 })
 
 app.listen(3000, ()=>{
