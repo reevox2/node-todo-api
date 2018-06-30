@@ -2,7 +2,7 @@ const {ObjectID} = require('mongodb');
 
 const {mongoose} = require('./db/mongoose.js');
 let {Todo} = require('./models/todo');
-let {User} = require('./models/User');
+let {User} = require('./models/user');
 
 
 const express = require('express');
