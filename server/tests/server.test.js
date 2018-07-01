@@ -5,7 +5,15 @@ const {ObjectID} = require('mongodb');
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 
-const dummyTodos = [{text: 'dummy', _id: new ObjectID()}, {text: 'dummy2', _id: new ObjectID()}];
+const dummyTodos = [{
+	text: 'dummy', 
+	_id: new ObjectID()
+}, {
+	text: 'dummy2', 
+	_id: new ObjectID(),
+	completed: true,
+	completedAt: 333
+}];
 
 
 beforeEach((done)=> {
@@ -109,6 +117,36 @@ describe('DELETE /todos/:id', ()=>{
 		request(app)
 			.delete(`/todos/${new ObjectID}`)
 			.expect(404)
+			.end(done);
+	})
+})
+
+
+describe('PATCH /todos/:id', ()=>{
+	it('should update todo, text and completed', done => {
+		let id = dummyTodos[0]._id
+		let body = {text: 'new text', completed: true}
+		request(app)
+			.patch(`/todos/${id}`)
+			.send(body)
+			.expect(200)
+			.expect(res => {
+				expect(res.body.todo.text).toBe(body.text);
+				expect(res.body.todo.completed).toBe(true) 
+			})
+			.end(done);
+	})
+	it('should clear completedAt when todo is not completed', done =>{
+		let id = dummyTodos[1]._id
+		let body = {completed: false}
+		request(app)
+			.patch(`/todos/${id}`)
+			.send(body)
+			.expect(200)
+			.expect(res => {
+				expect(res.body.todo.completedAt).toBe(null);
+				expect(res.body.todo.completed).toBe(body.completed) 
+			})
 			.end(done);
 	})
 })
