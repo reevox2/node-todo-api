@@ -1,3 +1,14 @@
+let env = process.env.NODE_ENV || 'development';
+console.log(`****** RUNNING IN ${env} MODE ******`);
+
+if (env === 'development' && !process.env.PORT) {
+	process.env.PORT = 3000;
+	process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoApp';
+} else if( env === 'test' && !process.env.PORT) {
+	process.env.PORT = 3000;
+	process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAppTest';
+}
+console.log(`****** SETTING TO PORT ${process.env.PORT} ******`);
 const {ObjectID} = require('mongodb');
 const _ = require('lodash');
 const express = require('express');
@@ -10,7 +21,7 @@ let {User} = require('./models/user');
 
 
 let app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
@@ -89,7 +100,7 @@ app.patch('/todos/:id', (req, res)=> {
 });
 
 app.listen(port, ()=>{
-	console.log(`Spinning up a server on ${port}`);
+	console.log(`****** Spinning up a server on PORT ${port} ******`);
 });
 
 module.exports = {app};
