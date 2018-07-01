@@ -66,7 +66,7 @@ describe('GET /todos', ()=>{
 
 
 describe('GET /todos/:id', ()=>{
-	it('should return todo doc', done=>{
+	it('should return todo doc', done => {
 		request(app)
 			.get(`/todos/${dummyTodos[0]._id}`)
 			.expect(200)
@@ -86,5 +86,29 @@ describe('GET /todos/:id', ()=>{
 			.get(`/todos/123`)
 			.expect(404)
 			.end(done)
+	})
+})
+
+describe('DELETE /todos/:id', ()=>{
+	it('should delete todo', done => {
+		request(app)
+			.delete(`/todos/${dummyTodos[0]._id}`)
+			.expect(200)
+			.expect((res) => {
+				expect(res.body.todo._id).toBe(`${dummyTodos[0]._id}`)
+			})
+			.end(done);
+	})
+	it('should 400 if todo id is invalid', done => {
+		request(app)
+			.delete(`/todos/123`)
+			.expect(400)
+			.end(done);
+	})
+	it('should 404 if todo not found', done => {
+		request(app)
+			.delete(`/todos/${new ObjectID}`)
+			.expect(404)
+			.end(done);
 	})
 })

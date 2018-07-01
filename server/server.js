@@ -52,7 +52,7 @@ app.get('/todos/:id', (req, res)=> {
 app.delete('/todos/:id', (req, res)=>{
 	let id = req.params.id;
 	if(!ObjectID.isValid(id)) {
-		return res.status(404).send({error: `ID not valid`});
+		return res.status(400).send({error: `ID not valid`});
 	}
 	Todo.findByIdAndRemove(id)
 		.then(todo =>{
