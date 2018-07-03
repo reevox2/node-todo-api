@@ -208,3 +208,42 @@ describe('POST /users', () => {
 			});
 	})
 })
+
+describe('POST /users/login', () => {
+	it('should log in user and return auth token', done => {
+		request(app)
+			.post('/users/login')
+			.send(users[1])
+			.expect(200)
+			.expect(res=>{
+				expect(res.headers['x-auth']).toExist();
+				expect(res.body._id).toBe(users[1]._id.toHexString());
+				expect(res.body.email).toBe(users[1].email);
+			})
+			.end((err, res) => {
+				if(err) return done(err)
+
+				User.findById(users[1]._id).then(user => {
+					expect(user.tokens[0]).toInclude({
+						access: 'auth',
+						token: res.headers['x-auth']
+					})
+					done();
+				}).catch(e => done(e));
+			})
+	})
+	it('should reject invalid login', done => {
+		request(app)
+			.post('/users/login')
+			.send({email: users[1].email, password: 'eatmybutt360'})
+			.expect(400, {})
+			.end((err, res) => {
+				if(err) return done(err)
+
+				User.findById(users[1]._id).then(user=>{
+					expect(user.tokens[0]).toNotExist();
+					done();
+				}).catch(e => done(e))
+			})
+	})
+})
