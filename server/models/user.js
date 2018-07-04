@@ -41,6 +41,16 @@ UserSchema.set('toJSON', {transform: (doc, returned, options) => {
 }});
 
 
+UserSchema.methods.removeToken = function (token) {
+	let user = this;
+
+	return user.update({
+		$pull: {
+			tokens: {token}
+		}
+	})
+}
+
 UserSchema.methods.generateAuthToken = function () {
 	let user = this;
 	let access = 'auth';
